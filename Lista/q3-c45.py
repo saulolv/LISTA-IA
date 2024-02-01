@@ -2,7 +2,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.preprocessing import LabelEncoder
-import matplotlib.pyplot as plt
 
 def encadeamento_para_tras(model, exemplo, feature_names):
   """
@@ -79,7 +78,7 @@ def inferencer(model, user_data):
     return le.inverse_transform(model.predict([user_data]))[0]
 
 # Carrega os dados do arquivo Excel
-df = pd.read_excel('IA-gerente.xlsx')
+df = pd.read_excel('Lista/IA-gerente.xlsx')
 
 # Exemplos adicionais para ampliar a base
 novos_exemplos = pd.DataFrame({
@@ -128,6 +127,6 @@ exemplo3 = [1, 0, 1, 1]  # história_credito=Desconhecida, divida=Baixa, garanti
 
 for exemplo in [exemplo1, exemplo2, exemplo3]:
     print(f"Encademento para frente: {encadeamento_para_frente(model, exemplo, list(X.columns))}")
-    print(f"Encadeamento para trás: {encadeamento_para_tras(model, exemplo, list(X.columns))}")
+    #print(f"Encadeamento para trás: {encadeamento_para_tras(model, exemplo, list(X.columns))}")
     print("\n")
     
