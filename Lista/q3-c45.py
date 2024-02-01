@@ -4,49 +4,7 @@ from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.preprocessing import LabelEncoder
 
 def encadeamento_para_tras(model, exemplo, feature_names):
-  """
-  Realiza o encadeamento para trás em uma árvore de decisão, 
-  gerando regras "Se Então".
-
-  Argumentos:
-    model: Modelo de árvore de decisão.
-    exemplo: Lista com os valores das features do exemplo a ser analisado.
-    feature_names: Lista com os nomes das features.
-
-  Retorno:
-    Regras "Se Então" em formato textual.
-  """
-
-  node = 0  # Começamos no nó raiz
-  features = model.tree_.feature
-  thresholds = model.tree_.threshold
-  left_children = model.tree_.children_left
-  right_children = model.tree_.children_right
-  classes = model.classes_
-
-  regras = []  # Lista para armazenar as regras
-
-  while node != -2:  # Percorre a árvore até chegar a um nó folha
-    feature_name = feature_names[features[node]]
-    threshold = thresholds[node]
-
-    # Se for um nó de divisão
-    if features[node] != -2:
-      if exemplo[features[node]] <= threshold:
-        regras.append(f"SE {feature_name} <= {threshold}")
-        node = left_children[node]
-      else:
-        regras.append(f"SE {feature_name} > {threshold}")
-        node = right_children[node]
-    else:  # Se for um nó folha
-      classe_predita = classes[model.tree_.value[node].argmax()]
-      regras.append(f"ENTÃO Risco predito = {classe_predita}")
-
-  # Inverte a ordem da lista para que as regras sejam lidas da forma correta
-  regras.reverse()
-
-  # Concatena as regras em uma string
-  return " ".join(regras)
+  pass
 
 def encadeamento_para_frente(model, exemplo, feature_names):
     node = 0  # Começamos no nó raiz
@@ -72,10 +30,6 @@ def encadeamento_para_frente(model, exemplo, feature_names):
             classe_predita = classes[model.tree_.value[node].argmax()]
             print(f"CONCLUSÃO: Risco predito = {classe_predita}")
             return classe_predita
-
-def inferencer(model, user_data):
-    user_data = le.transform(user_data)
-    return le.inverse_transform(model.predict([user_data]))[0]
 
 # Carrega os dados do arquivo Excel
 df = pd.read_excel('Lista/IA-gerente.xlsx')
