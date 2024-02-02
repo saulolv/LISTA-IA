@@ -58,7 +58,7 @@ def encadeamento_para_frente(model, exemplo, feature_names):
             node = model.tree_.children_right[node]
 
 # Carrega os dados do arquivo Excel
-df = pd.read_excel('Lista/IA-gerente.xlsx')
+df = pd.read_excel('IA-gerente.xlsx')
 
 # Exemplos adicionais para ampliar a base
 novos_exemplos = pd.DataFrame({
