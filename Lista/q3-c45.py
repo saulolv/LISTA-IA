@@ -4,7 +4,31 @@ from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.preprocessing import LabelEncoder
 
 def encadeamento_para_tras(model, exemplo, feature_names):
-  pass
+    node = 0  # Começamos no nó raiz
+    features = model.tree_.feature
+    thresholds = model.tree_.threshold
+    classes = model.classes_
+
+    # Obtemos a previsão do modelo usando o exemplo
+    predicao = model.predict([exemplo])[0]
+
+    print("Encadeamento para trás:")
+    while True:
+        # Verifica se o nó atual é uma folha
+        if features[node] == -2:
+            print(f"CONCLUSÃO: Risco predito = {classes[model.tree_.value[node].argmax()]}")
+            return
+
+        # Imprime a condição no nó atual que leva à conclusão
+        feature_name = feature_names[features[node]]
+        threshold = thresholds[node]
+        print(f"SE {feature_name} <= {threshold} ENTÃO")
+
+        # Move para o nó pai com base na condição
+        if exemplo[features[node]] <= threshold:
+            node = model.tree_.children_left[node]
+        else:
+            node = model.tree_.children_right[node]
 
 def encadeamento_para_frente(model, exemplo, feature_names):
     node = 0  # Começamos no nó raiz
@@ -14,22 +38,24 @@ def encadeamento_para_frente(model, exemplo, feature_names):
 
     print("Encadeamento para frente:")
     while True:
-        # Verifica a condição no nó atual
-        if features[node] != -2:  # -2 indica um nó folha
-            feature_name = feature_names[features[node]]
-            threshold = thresholds[node]
-
-            print(f"SE {feature_name} <= {threshold} ENTÃO")
-
-            if exemplo[features[node]] <= threshold:
-                node = model.tree_.children_left[node]
-            else:
-                node = model.tree_.children_right[node]
-        else:
+        # Verifica se o nó atual é uma folha
+        if features[node] == -2:
             # Chegamos a um nó folha, retorna a classe correspondente
             classe_predita = classes[model.tree_.value[node].argmax()]
             print(f"CONCLUSÃO: Risco predito = {classe_predita}")
             return classe_predita
+
+        # Imprime a condição no nó atual
+        feature_name = feature_names[features[node]]
+        threshold = thresholds[node]
+
+        print(f"SE {feature_name} <= {threshold} ENTÃO")
+
+        # Move para o próximo nó com base na condição
+        if exemplo[features[node]] <= threshold:
+            node = model.tree_.children_left[node]
+        else:
+            node = model.tree_.children_right[node]
 
 # Carrega os dados do arquivo Excel
 df = pd.read_excel('Lista/IA-gerente.xlsx')
@@ -60,7 +86,7 @@ y = df['risco']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2) 
 # Treinamento do modelo
 model = DecisionTreeClassifier(criterion='entropy')
-model.fit(X_train, y_train)
+model.fit(X_train, y_train, check_input=True)
 
 # Avaliação do modelo
 y_train_pred = model.predict(X_train)
@@ -80,7 +106,9 @@ exemplo3 = [1, 0, 1, 1]  # história_credito=Desconhecida, divida=Baixa, garanti
 
 
 for exemplo in [exemplo1, exemplo2, exemplo3]:
-    print(f"Encademento para frente: {encadeamento_para_frente(model, exemplo, list(X.columns))}")
-    #print(f"Encadeamento para trás: {encadeamento_para_tras(model, exemplo, list(X.columns))}")
+    encadeamento_para_frente(model, exemplo, list(X.columns))
     print("\n")
-    
+
+for exemplo in [exemplo1, exemplo2, exemplo3]:
+    encadeamento_para_tras(model, exemplo, list(X.columns))
+    print("\n")
